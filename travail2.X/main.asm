@@ -131,7 +131,6 @@ InitialiserVariablesAZero
  movwf B_signe
  movwf B_exposant
  movwf B_fraction
- movwf B_fraction
  movwf Temporaire_octet3
  movwf Temporaire_octet3
  movwf Temporaire_octet2
@@ -156,15 +155,17 @@ ExtraireSigneNombreA
 ExtraireExposantNombreA
  movff A_octet3, A_exposant
  rlncf A_exposant
- ;teste le bit  7 de l'octet A_octet2, si 0, sauter la prochaine ligne
- ;assigner 0 au bit 0 de A_exposant
-  BTFSC A_octet2, 7
+ BTFSC A_octet2, 7
  bsf  A_exposant, 0
-  
-  BTFSS A_octet2, 7
+ BTFSS A_octet2, 7
  bcf A_exposant, 0
+ movlw b'1111111'
+ subwf A_exposant
  goto ExtraireExposantNombreB
-ExtraireFractionNombreA
+
+ ;Nom: Hans Darmstadt-Bélanger
+ ;But: à partir des octets 0 à 2 du nombre A, extraire la fraction du nombre
+ ExtraireFractionNombreA
  
 ;Nom: Hans Darmstadt-Bélanger
 ;But: à partir de l'octet B_octet3, déterminer si le nombre est positif ou négatif
@@ -175,18 +176,21 @@ ExtraireSigneNombreB
  
 ;Nom: Hans Darmstadt-Bélanger
 ;But: sous-routine qui trouve l'exposant du nombre B
-    ExtraireExposantNombreB
-     movff B_octet3, B_exposant
- rlncf B_exposant
- ;teste le bit  7 de l'octet A_octet2, si 0, sauter la prochaine ligne
- ;assigner 0 au bit 0 de A_exposant
-  BTFSC B_octet2, 7
- bsf  B_exposant, 0
+ExtraireExposantNombreB
+    movff B_octet3, B_exposant
+    rlncf B_exposant
+    BTFSC B_octet2, 7
+    bsf  B_exposant, 0
   
-  BTFSS A_octet2, 7
- bcf A_exposant, 0
- ;am here
-ExtraireFractionSigneB
+    BTFSS A_octet2, 7
+    bcf A_exposant, 0
+    
+    movlw b'1111111'
+    subwf A_exposant
+    
+    goto ExtraireFractionNombreA
+ 
+ExtraireFractionNombreB
  
 AdditionnerExposants
  
