@@ -163,7 +163,7 @@ ExtraireExposantNombreA
   
   BTFSS A_octet2, 7
  bcf A_exposant, 0
- 
+ goto ExtraireExposantNombreB
 ExtraireFractionNombreA
  
 ;Nom: Hans Darmstadt-Bélanger
@@ -173,8 +173,19 @@ ExtraireSigneNombreB
    BSF B_signe, 0
     goto ExtraireExposantNombreA
  
-ExtraireExposantNombreB
- 
+;Nom: Hans Darmstadt-Bélanger
+;But: sous-routine qui trouve l'exposant du nombre B
+    ExtraireExposantNombreB
+     movff B_octet3, B_exposant
+ rlncf B_exposant
+ ;teste le bit  7 de l'octet A_octet2, si 0, sauter la prochaine ligne
+ ;assigner 0 au bit 0 de A_exposant
+  BTFSC B_octet2, 7
+ bsf  B_exposant, 0
+  
+  BTFSS A_octet2, 7
+ bcf A_exposant, 0
+ ;am here
 ExtraireFractionSigneB
  
 AdditionnerExposants
