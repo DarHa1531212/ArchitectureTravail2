@@ -1,5 +1,5 @@
 MPLINK 5.08, LINKER
-Linker Map File - Created Thu Oct 25 14:53:03 2018
+Linker Map File - Created Thu Oct 25 14:53:09 2018
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -7,11 +7,11 @@ Linker Map File - Created Thu Oct 25 14:53:03 2018
                  RST_CODE       code   0x000000    program   0x000004
                    .cinit    romdata   0x000004    program   0x000002
                  PRG_CODE       code   0x000020    program   0x00006c
-.config_300001_BUILD/DEFAULT/PRODUCTION/MAIN.O    romdata   0x300001    program   0x000001
-.config_300002_BUILD/DEFAULT/PRODUCTION/MAIN.O    romdata   0x300002    program   0x000001
-.config_300003_BUILD/DEFAULT/PRODUCTION/MAIN.O    romdata   0x300003    program   0x000001
-.config_300005_BUILD/DEFAULT/PRODUCTION/MAIN.O    romdata   0x300005    program   0x000001
-.config_300006_BUILD/DEFAULT/PRODUCTION/MAIN.O    romdata   0x300006    program   0x000001
+.config_300001_BUILD/DEFAULT/DEBUG/MAIN.O    romdata   0x300001    program   0x000001
+.config_300002_BUILD/DEFAULT/DEBUG/MAIN.O    romdata   0x300002    program   0x000001
+.config_300003_BUILD/DEFAULT/DEBUG/MAIN.O    romdata   0x300003    program   0x000001
+.config_300005_BUILD/DEFAULT/DEBUG/MAIN.O    romdata   0x300005    program   0x000001
+.config_300006_BUILD/DEFAULT/DEBUG/MAIN.O    romdata   0x300006    program   0x000001
               Zone_udata1      udata   0x000060       data   0x000008
               Zone_udata2      udata   0x000080       data   0x00000e
 
