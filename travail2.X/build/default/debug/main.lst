@@ -1,4 +1,4 @@
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  1
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00041         
                       00042 Zone_udata1     udata 0x60                                      
                       00043 
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  2
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -75,7 +75,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00053 Zone_udata2 udata 0x80  
                       00054 
 000080                00055 A_signe  res  1
-000081                00056 A_exposant  res  1 
+000081                00056 A_exposant res  1 
 000082                00057 A_fraction  res  1
 000083                00058 B_signe  res  1
 000084                00059 B_exposant  res  1
@@ -107,7 +107,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 000024                00085 InitialiserVariablesAEtB
                       00086   ; nbreA    =  18
                       00087   ;         =   01000001
-000024 0E41           00088  movlw b'01000001'
+000024 0EC1           00088  movlw b'11000001'
 000026 6E??           00089  movwf A_octet3
                       00090  
                       00091  ;              10010000
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00094 
                       00095  ;              00000000
                       00096  
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  3
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -129,9 +129,9 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 000030 0E00           00101  movlw b'00000000'
 000032 6E??           00102  movwf A_octet0
                       00103  
-                      00104  ; nbreB    =   9.5
+                      00104  ; nbreB    =   9.r
                       00105  ;          =   01000001
-000034 0E41           00106  movlw b'01000001'
+000034 0EC1           00106  movlw b'11000001'
 000036 6E??           00107  movwf B_octet3
                       00108  
                       00109  ;              00011000
@@ -159,67 +159,187 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 000050 6E??           00131  movwf B_signe
 000052 6E??           00132  movwf B_exposant
 000054 6E??           00133  movwf B_fraction
-000056 6E??           00134  movwf B_fraction
+000056 6E??           00134  movwf Temporaire_octet3
 000058 6E??           00135  movwf Temporaire_octet3
-00005A 6E??           00136  movwf Temporaire_octet3
-00005C 6E??           00137  movwf Temporaire_octet2
-00005E 6E??           00138  movwf Temporaire_octet1
-000060 6E??           00139  movwf Temporaire_octet0
-000062 6E??           00140  movwf Resultat_octet3
-000064 6E??           00141  movwf Resultat_octet2
-000066 6E??           00142  movwf Resultat_octet1
-000068 6E??           00143  movwf Resultat_octet0
-                      00144   
-00006A EF?? F???      00145   goto InitialiserVariablesAEtB
-                      00146         
-                      00147 ;Nom: Hans Darmstadt-Bélanger
-                      00148 ;But: à partir de l'octet A_octet3, déterminer si le nombre est positif ou négatif
-00006E                00149 ExtraireSigneNombreA
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  4
+00005A 6E??           00136  movwf Temporaire_octet2
+00005C 6E??           00137  movwf Temporaire_octet1
+00005E 6E??           00138  movwf Temporaire_octet0
+000060 6E??           00139  movwf Resultat_octet3
+000062 6E??           00140  movwf Resultat_octet2
+000064 6E??           00141  movwf Resultat_octet1
+000066 6E??           00142  movwf Resultat_octet0
+                      00143   
+000068 EF?? F???      00144   goto InitialiserVariablesAEtB
+                      00145         
+                      00146 ;Nom: Hans Darmstadt-Bélanger
+                      00147 ;But: à partir de l'octet A_octet3, déterminer si le nombre est positif ou négatif
+00006C                00148 ExtraireSigneNombreA
+00006C BE??           00149  BTFSC A_octet3, 7
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00006E BE??           00150  BTFSC A_octet3, 7
-000070 80??           00151  BSF  A_signe, 0
-000072 EF?? F???      00152  goto ExtraireSigneNombreB
-                      00153  
-                      00154 ;Nom: Hans Darmstadt-Bélanger
-                      00155  ;But: sous-routine qui trouve l'exposant du nombre A
-000076                00156 ExtraireExposantNombreA
-000076 C??? F???      00157  movff A_octet3, A_exposant
-00007A 46??           00158  rlncf A_exposant
-                      00159  ;teste le bit  7 de l'octet A_octet2, si 0, sauter la prochaine ligne
-                      00160  ;assigner 0 au bit 0 de A_exposant
-00007C BE??           00161   BTFSC A_octet2, 7
-00007E 80??           00162  bsf  A_exposant, 0
-                      00163   
-000080 AE??           00164   BTFSS A_octet2, 7
-000082 90??           00165  bcf A_exposant, 0
-                      00166  
-000084                00167 ExtraireFractionNombreA
-                      00168  
-                      00169 ;Nom: Hans Darmstadt-Bélanger
-                      00170 ;But: à partir de l'octet B_octet3, déterminer si le nombre est positif ou négatif
-000084                00171 ExtraireSigneNombreB
-000084 BE??           00172     BTFSC B_octet3, 7
-000086 80??           00173    BSF B_signe, 0
-000088 EF?? F???      00174     goto ExtraireExposantNombreA
-                      00175  
-00008C                00176 ExtraireExposantNombreB
-                      00177  
-00008C                00178 ExtraireFractionSigneB
-                      00179  
-00008C                00180 AdditionnerExposants
-                      00181  
-00008C                00182 MultiplierFractions
+00006E 80??           00150  BSF  A_signe, 0
+000070 EF?? F???      00151  goto ExtraireSigneNombreB
+                      00152  
+                      00153 ;Nom: Hans Darmstadt-Bélanger
+                      00154  ;But: sous-routine qui trouve l'exposant du nombre A
+000074                00155 ExtraireExposantNombreA
+000074 C??? F???      00156  movff A_octet3, A_exposant
+000078 46??           00157  rlncf A_exposant
+00007A BE??           00158  BTFSC A_octet2, 7
+00007C 80??           00159  bsf  A_exposant, 0
+00007E AE??           00160  BTFSS A_octet2, 7
+000080 90??           00161  bcf A_exposant, 0
+                      00162  
+000082 0E7F           00163  movlw b'1111111'
+000084 5E??           00164  subwf A_exposant
+                      00165  
+000086 EF?? F???      00166  goto ExtraireExposantNombreB
+                      00167  
+                      00168 
+                      00169  ;Nom: Hans Darmstadt-Bélanger
+                      00170  ;But: à partir de l'octet  2 du nombre A, extraire la fraction du nombre
+Warning[207]: Found label after column 1. (ExtraireFractionNombreA)
+00008A                00171  ExtraireFractionNombreA
+00008A C??? F???      00172  movFF A_octet2, A_fraction
+00008E 8E??           00173  bsf A_fraction, 7
+                      00174  
+000090 EF?? F???      00175  goto ExtraireFractionNombreB
+                      00176   
+                      00177 ;Nom: Hans Darmstadt-Bélanger
+                      00178 ;But: à partir de l'octet B_octet3, déterminer si le nombre est positif ou négatif
+000094                00179 ExtraireSigneNombreB
+000094 BE??           00180     BTFSC B_octet3, 7
+000096 80??           00181    BSF B_signe, 0
+000098 EF?? F???      00182     goto ExtraireExposantNombreA
                       00183  
-00008C                00184 NormaliserLeResultat
-                      00185  
-00008C                00186 EcrireResultatFinal
-                      00187     END
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  5
+                      00184 ;Nom: Hans Darmstadt-Bélanger
+                      00185 ;But: sous-routine qui trouve l'exposant du nombre B
+00009C                00186 ExtraireExposantNombreB
+00009C C??? F???      00187     movff B_octet3, B_exposant
+0000A0 46??           00188     rlncf B_exposant
+0000A2 BE??           00189     BTFSC B_octet2, 7
+0000A4 80??           00190     bsf  B_exposant, 0
+                      00191   
+0000A6 AE??           00192     BTFSS B_octet2, 7
+0000A8 90??           00193     bcf B_exposant, 0
+                      00194     
+0000AA 0E7F           00195     movlw b'1111111'
+                      00196 
+0000AC 5E??           00197     subwf B_exposant
+                      00198 
+                      00199     ;instructions de bit negatif
+                      00200 
+                      00201     
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0000AE EF?? F???      00202     goto ExtraireFractionNombreA
+                      00203  
+                      00204 ;Nom Antoine Larouche
+                      00205 ;But: à partir de l'octet  2 du nombre B, extraire la fraction du nombre
+0000B2                00206 ExtraireFractionNombreB
+0000B2 C??? F???      00207  movFF B_octet2, B_fraction
+0000B6 8E??           00208  bsf B_fraction, 7
+0000B8 EF?? F???      00209  goto AdditionnerExposants
+                      00210 
+0000BC                00211 AdditionnerExposants
+0000BC 5000           00212  movf A_exposant, 0
+0000BE 2400           00213  addwf B_exposant, 0
+0000C0 0F7F           00214  addlw d'127'
+0000C2 6E??           00215  movwf Temporaire_octet3
+0000C4 EF?? F???      00216  goto MultiplierFractions
+                      00217  
+0000C8                00218 MultiplierFractions
+0000C8 5000           00219  movf A_fraction, 0
+                      00220  
+0000CA 02??           00221  mulwf B_fraction
+0000CC EF?? F???      00222  goto NormaliserLeResultat
+                      00223 
+                      00224  ;Nom: Hans Darmstadt-Bélanger
+                      00225  ;But: transférer le resultat de la multiplication dans la répons
+0000D0                00226 NormaliserLeResultat
+                      00227  
+                      00228  ;manipulations ProdL
+0000D0 50F3           00229  movf PRODL, 0
+0000D2 6E??           00230  movwf Resultat_octet1
+0000D4 46??           00231  rlncf Resultat_octet1
+                      00232  
+0000D6 BE??           00233  BTFSC Resultat_octet1, 7 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+0000D8 8E??           00234  bsf Resultat_octet0, 7
+                      00235   
+0000DA AE??           00236  BTFSS Resultat_octet1, 7 ;s'li est à 1, on skip, il rentre quand il est à 0, faire les manipulations po
+                            ur 0
+0000DC 9E??           00237  bcf Resultat_octet0, 7
+                      00238  
+                      00239  
+                      00240  ;manipulations ProdH
+0000DE 50F4           00241  movf PRODH, 0
+0000E0 6E??           00242  movwf Resultat_octet2
+0000E2 46??           00243  rlncf Resultat_octet2
+0000E4 0000           00244  nop
+0000E6 9E??           00245  bcf Resultat_octet2, 7
+                      00246   ;prendre le 0 de octet1 et le mettre dans 0 de octet2
+                      00247   
+0000E8 B0??           00248  BTFSC Resultat_octet1,0 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+0000EA 80??           00249  bsf Resultat_octet2, 0
+                      00250   
+0000EC A0??           00251  BTFSS Resultat_octet1, 0 ;s'li est à 1, on skip, il rentre quand il est à 0, faire les manipulations po
+                            ur 0
+0000EE 90??           00252  bcf Resultat_octet2, 0
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00253  
+0000F0 90??           00254  bcf Resultat_octet1, 0
+                      00255  
+                      00256  
+                      00257  
+                      00258  
+                      00259  ;manipulations pour l'exposant
+0000F2 5000           00260   movf Temporaire_octet3, 0
+0000F4 6E??           00261  movwf Resultat_octet3
+0000F6 42??           00262  rrncf Resultat_octet3
+                      00263  
+0000F8 BE??           00264  BTFSC Resultat_octet3, 7 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+0000FA 8E??           00265  bsf Resultat_octet2, 7
+                      00266   
+0000FC AE??           00267  BTFSS Resultat_octet3, 7 ;s'il est à 1, on skip, il rentre quand il est à 0, faire les manipulations po
+                            ur 0
+0000FE 9E??           00268  bcf Resultat_octet2, 7
+                      00269  
+                      00270  
+000100 EF?? F???      00271  goto DeterminerSigneResultat
+                      00272  
+                      00273  
+                      00274  ;Nom: Antoine Larouche
+                      00275  ;But: déterminer du signe de la réponse selon le signe des chiffres A et B
+Warning[207]: Found label after column 1. (DeterminerSigneResultat)
+000104                00276  DeterminerSigneResultat
+                      00277  
+000104 5000           00278  movf A_signe, 0
+000106 1800           00279  xorwf B_signe, 0
+                      00280  
+000108 B0E8           00281  BTFSC WREG, 0 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+00010A 8E??           00282  bsf Resultat_octet3, 7
+                      00283   
+00010C A0E8           00284  BTFSS WREG, 0 ;s'il est à 1, on skip, il rentre quand il est à 0, faire les manipulations pour 0
+00010E 9E??           00285  bcf Resultat_octet3, 7
+                      00286  
+000110 0000           00287  nop
+                      00288  
+000112                00289 EcrireResultatFinal
+                      00290     END
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  7
 
 
 SYMBOL TABLE
@@ -267,7 +387,7 @@ A_octet1                          00000062
 A_octet2                          00000061
 A_octet3                          00000060
 A_signe                           00000080
-AdditionnerExposants              0000008C
+AdditionnerExposants              000000BC
 B0CON                             00000E20
 B0D0                              00000E26
 B0D00                             00000000
@@ -278,7 +398,7 @@ B0D04                             00000004
 B0D05                             00000005
 B0D06                             00000006
 B0D07                             00000007
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  6
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  8
 
 
 SYMBOL TABLE
@@ -337,7 +457,7 @@ B0D63                             00000003
 B0D64                             00000004
 B0D65                             00000005
 B0D66                             00000006
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  7
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE  9
 
 
 SYMBOL TABLE
@@ -396,7 +516,7 @@ B1D33                             00000003
 B1D34                             00000004
 B1D35                             00000005
 B1D36                             00000006
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  8
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 10
 
 
 SYMBOL TABLE
@@ -455,7 +575,7 @@ B2D03                             00000003
 B2D04                             00000004
 B2D05                             00000005
 B2D06                             00000006
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE  9
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 11
 
 
 SYMBOL TABLE
@@ -514,7 +634,7 @@ B2D62                             00000002
 B2D63                             00000003
 B2D64                             00000004
 B2D65                             00000005
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 10
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 12
 
 
 SYMBOL TABLE
@@ -573,7 +693,7 @@ B3D32                             00000002
 B3D33                             00000003
 B3D34                             00000004
 B3D35                             00000005
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 11
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 13
 
 
 SYMBOL TABLE
@@ -632,7 +752,7 @@ B4D01                             00000001
 B4D02                             00000002
 B4D03                             00000003
 B4D04                             00000004
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 12
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 14
 
 
 SYMBOL TABLE
@@ -691,7 +811,7 @@ B4D60                             00000000
 B4D61                             00000001
 B4D62                             00000002
 B4D63                             00000003
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 13
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 15
 
 
 SYMBOL TABLE
@@ -750,7 +870,7 @@ B5D27                             00000007
 B5D3                              00000E79
 B5D30                             00000000
 B5D31                             00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 14
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 16
 
 
 SYMBOL TABLE
@@ -809,7 +929,7 @@ BANKED                            00000001
 BAUDCON                           00000FB8
 BAUDCTL                           00000FB8
 BCLIE                             00000003
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 15
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 17
 
 
 SYMBOL TABLE
@@ -868,7 +988,7 @@ CANSTAT_RO0                       00000F5E
 CANSTAT_RO1                       00000F4E
 CANSTAT_RO2                       00000F3E
 CANSTAT_RO3                       00000F2E
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 16
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 18
 
 
 SYMBOL TABLE
@@ -927,7 +1047,7 @@ CVROE                             00000006
 CVRR                              00000005
 CVRSS                             00000004
 D                                 00000005
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 17
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 19
 
 
 SYMBOL TABLE
@@ -954,6 +1074,7 @@ DLC3                              00000003
 DONE                              00000001
 D_A                               00000005
 D_NOT_A                           00000005
+DeterminerSigneResultat           00000104
 ECANCON                           00000F77
 ECCP1                             00000004
 ECCP1AS                           00000FB6
@@ -985,13 +1106,13 @@ EEIF                              00000004
 EEIP                              00000004
 EEPGD                             00000007
 EICODE0                           00000000
-EICODE1                           00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 18
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 20
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+EICODE1                           00000001
 EICODE1_ICODE0                    00000001
 EICODE2                           00000002
 EICODE2_ICODE1                    00000002
@@ -1031,26 +1152,26 @@ EWIN4                             00000004
 EXID                              00000003
 EXIDE                             00000003
 EXIDEN                            00000003
-EcrireResultatFinal               0000008C
-ExtraireExposantNombreA           00000076
-ExtraireExposantNombreB           0000008C
-ExtraireFractionNombreA           00000084
-ExtraireFractionSigneB            0000008C
-ExtraireSigneNombreA              0000006E
-ExtraireSigneNombreB              00000084
+EcrireResultatFinal               00000112
+ExtraireExposantNombreA           00000074
+ExtraireExposantNombreB           0000009C
+ExtraireFractionNombreA           0000008A
+ExtraireFractionNombreB           000000B2
+ExtraireSigneNombreA              0000006C
+ExtraireSigneNombreB              00000094
 F                                 00000005
 F0BP_0                            00000000
 F0BP_1                            00000001
 F0BP_2                            00000002
 F0BP_3                            00000003
 F10BP_0                           00000000
-F10BP_1                           00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 19
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 21
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+F10BP_1                           00000001
 F10BP_2                           00000002
 F10BP_3                           00000003
 F11BP_0                           00000004
@@ -1103,13 +1224,13 @@ F7BP_2                            00000006
 F7BP_3                            00000007
 F8BP_0                            00000000
 F8BP_1                            00000001
-F8BP_2                            00000002
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 20
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 22
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+F8BP_2                            00000002
 F8BP_3                            00000003
 F9BP_0                            00000004
 F9BP_1                            00000005
@@ -1162,13 +1283,13 @@ FILHIT1_TXPRI1                    00000001
 FILHIT2                           00000002
 FILHIT2_RTREN                     00000002
 FILHIT3                           00000003
-FILHIT3_TXREQ                     00000003
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 21
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 23
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+FILHIT3_TXREQ                     00000003
 FILHIT4                           00000004
 FILHIT4_TXERR                     00000004
 FLC0                              00000000
@@ -1221,13 +1342,13 @@ ICODE2                            00000002
 ICODE3                            00000003
 ICODE4                            00000004
 IDLEN                             00000007
-INDF0                             00000FEF
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 22
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 24
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+INDF0                             00000FEF
 INDF1                             00000FE7
 INDF2                             00000FDF
 INT0                              00000000
@@ -1280,13 +1401,13 @@ KBI2                              00000006
 KBI3                              00000007
 LATA                              00000F89
 LATA0                             00000000
-LATA1                             00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 23
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 25
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+LATA1                             00000001
 LATA2                             00000002
 LATA3                             00000003
 LATA4                             00000004
@@ -1339,18 +1460,18 @@ LVV1                              00000001
 LVV2                              00000002
 LVV3                              00000003
 MDSEL0                            00000006
-MDSEL1                            00000007
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 24
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 26
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+MDSEL1                            00000007
 MSEL0                             00000DF0
 MSEL1                             00000DF1
 MSEL2                             00000DF2
 MSEL3                             00000DF3
-MultiplierFractions               0000008C
+MultiplierFractions               000000C8
 N                                 00000004
 NOT_A                             00000005
 NOT_ADDRESS                       00000005
@@ -1367,7 +1488,7 @@ NOT_T3SYNC                        00000002
 NOT_TO                            00000003
 NOT_W                             00000002
 NOT_WRITE                         00000002
-NormaliserLeResultat              0000008C
+NormaliserLeResultat              000000D0
 OBF                               00000006
 OERR                              00000001
 OPMODE0                           00000005
@@ -1398,13 +1519,13 @@ PCLATU                            00000FFB
 PD                                00000002
 PDC0                              00000000
 PDC1                              00000001
-PDC2                              00000002
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 25
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 27
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+PDC2                              00000002
 PDC3                              00000003
 PDC4                              00000004
 PDC5                              00000005
@@ -1457,13 +1578,13 @@ PSP4                              00000004
 PSP5                              00000005
 PSP6                              00000006
 PSP7                              00000007
-PSPIE                             00000007
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 26
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 28
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+PSPIE                             00000007
 PSPIF                             00000007
 PSPIP                             00000007
 PSPMODE                           00000004
@@ -1516,13 +1637,13 @@ RC0                               00000000
 RC1                               00000001
 RC2                               00000002
 RC3                               00000003
-RC4                               00000004
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 27
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 29
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RC4                               00000004
 RC5                               00000005
 RC6                               00000006
 RC7                               00000007
@@ -1575,13 +1696,13 @@ RXB0D00                           00000000
 RXB0D01                           00000001
 RXB0D02                           00000002
 RXB0D03                           00000003
-RXB0D04                           00000004
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 28
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 30
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RXB0D04                           00000004
 RXB0D05                           00000005
 RXB0D06                           00000006
 RXB0D07                           00000007
@@ -1634,13 +1755,13 @@ RXB0D6                            00000F6C
 RXB0D60                           00000000
 RXB0D61                           00000001
 RXB0D62                           00000002
-RXB0D63                           00000003
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 29
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 31
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RXB0D63                           00000003
 RXB0D64                           00000004
 RXB0D65                           00000005
 RXB0D66                           00000006
@@ -1693,13 +1814,13 @@ RXB1D23                           00000003
 RXB1D24                           00000004
 RXB1D25                           00000005
 RXB1D26                           00000006
-RXB1D27                           00000007
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 30
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 32
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RXB1D27                           00000007
 RXB1D3                            00000F59
 RXB1D30                           00000000
 RXB1D31                           00000001
@@ -1752,13 +1873,13 @@ RXB1IE                            00000001
 RXB1IF                            00000001
 RXB1IP                            00000001
 RXB1OVFL                          00000006
-RXB1SIDH                          00000F51
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 31
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 33
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RXB1SIDH                          00000F51
 RXB1SIDL                          00000F52
 RXBODBEN                          00000002
 RXBP                              00000003
@@ -1811,13 +1932,13 @@ RXF2EIDH                          00000F0A
 RXF2EIDL                          00000F0B
 RXF2EN                            00000002
 RXF2SIDH                          00000F08
-RXF2SIDL                          00000F09
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 32
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 34
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RXF2SIDL                          00000F09
 RXF3EIDH                          00000F0E
 RXF3EIDL                          00000F0F
 RXF3EN                            00000003
@@ -1870,13 +1991,13 @@ RXM0EIDH                          00000F1A
 RXM0EIDL                          00000F1B
 RXM0SIDH                          00000F18
 RXM0SIDL                          00000F19
-RXM0_RTRRO                        00000005
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 33
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 35
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RXM0_RTRRO                        00000005
 RXM1                              00000006
 RXM1EIDH                          00000F1E
 RXM1EIDL                          00000F1F
@@ -1929,13 +2050,13 @@ SID1                              00000006
 SID10                             00000007
 SID2                              00000007
 SID3                              00000000
-SID4                              00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 34
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 36
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+SID4                              00000001
 SID5                              00000002
 SID6                              00000003
 SID7                              00000004
@@ -1988,13 +2109,13 @@ T0IP                              00000002
 T0PS0                             00000000
 T0PS1                             00000001
 T0PS2                             00000002
-T0PS3                             00000003
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 35
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 37
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+T0PS3                             00000003
 T0SE                              00000004
 T13CKI                            00000000
 T1CKPS0                           00000004
@@ -2047,13 +2168,13 @@ TMR1H                             00000FCF
 TMR1IE                            00000000
 TMR1IF                            00000000
 TMR1IP                            00000000
-TMR1L                             00000FCE
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 36
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 38
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TMR1L                             00000FCE
 TMR1ON                            00000000
 TMR2                              00000FCC
 TMR2IE                            00000001
@@ -2106,13 +2227,13 @@ TRISC6                            00000006
 TRISC7                            00000007
 TRISD                             00000F95
 TRISD0                            00000000
-TRISD1                            00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 37
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 39
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TRISD1                            00000001
 TRISD2                            00000002
 TRISD3                            00000003
 TRISD4                            00000004
@@ -2165,13 +2286,13 @@ TXB0D3                            00000F49
 TXB0D30                           00000000
 TXB0D31                           00000001
 TXB0D32                           00000002
-TXB0D33                           00000003
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 38
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 40
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TXB0D33                           00000003
 TXB0D34                           00000004
 TXB0D35                           00000005
 TXB0D36                           00000006
@@ -2224,13 +2345,13 @@ TXB1CON                           00000F30
 TXB1D0                            00000F36
 TXB1D00                           00000000
 TXB1D01                           00000001
-TXB1D02                           00000002
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 39
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 41
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TXB1D02                           00000002
 TXB1D03                           00000003
 TXB1D04                           00000004
 TXB1D05                           00000005
@@ -2283,13 +2404,13 @@ TXB1D56                           00000006
 TXB1D57                           00000007
 TXB1D6                            00000F3C
 TXB1D60                           00000000
-TXB1D61                           00000001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 40
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 42
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TXB1D61                           00000001
 TXB1D62                           00000002
 TXB1D63                           00000003
 TXB1D64                           00000004
@@ -2342,13 +2463,13 @@ TXB2D25                           00000005
 TXB2D26                           00000006
 TXB2D27                           00000007
 TXB2D3                            00000F29
-TXB2D30                           00000000
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 41
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 43
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TXB2D30                           00000000
 TXB2D31                           00000001
 TXB2D32                           00000002
 TXB2D33                           00000003
@@ -2401,13 +2522,13 @@ TXB2IP                            00000004
 TXB2SIDH                          00000F21
 TXB2SIDL                          00000F22
 TXBIE                             00000DFC
-TXBIF                             00000007
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 42
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 44
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TXBIF                             00000007
 TXBIFBXB2CON                      00000007
 TXBIFTXB1CON                      00000007
 TXBIP                             00000004
@@ -2460,13 +2581,13 @@ WREG                              00000FE8
 WREN                              00000002
 WRERR                             00000003
 WUE                               00000001
-Z                                 00000002
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 43
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 45
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+Z                                 00000002
 ZERO_EQU                          00000000
 _BBSIZ_1024_4L                    000000CF
 _BBSIZ_2048_4L                    000000DF
@@ -2519,13 +2640,13 @@ _EBTRB_ON_7H                      000000BF
 _FCMEN_OFF_1H                     000000BF
 _FCMEN_ON_1H                      000000FF
 _IDLOC0                           00200000
-_IDLOC1                           00200001
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 44
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 46
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+_IDLOC1                           00200001
 _IDLOC2                           00200002
 _IDLOC3                           00200003
 _IDLOC4                           00200004
@@ -2578,13 +2699,13 @@ _WRT0_OFF_6L                      000000FF
 _WRT0_ON_6L                       000000FE
 _WRT1_OFF_6L                      000000FF
 _WRT1_ON_6L                       000000FD
-_WRT2_OFF_6L                      000000FF
-MPASM 5.77                          MAIN.ASM   10-25-2018  14:53:08         PAGE 45
+MPASM 5.77                          MAIN.ASM   10-25-2018  21:15:32         PAGE 47
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+_WRT2_OFF_6L                      000000FF
 _WRT2_ON_6L                       000000FB
 _WRT3_OFF_6L                      000000FF
 _WRT3_ON_6L                       000000F7
@@ -2601,7 +2722,7 @@ __DEBUG
 __MPLAB_DEBUGGER_SIMULATOR        1
 
 Errors   :     0
-Warnings :     0 reported,     0 suppressed
+Warnings :     2 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

@@ -53,7 +53,7 @@ B_octet0  res  1
 Zone_udata2 udata 0x80  
 
 A_signe  res  1
-A_exposant  res  1 
+A_exposant res  1 
 A_fraction  res  1
 B_signe  res  1
 B_exposant  res  1
@@ -85,7 +85,7 @@ Start
 InitialiserVariablesAEtB
   ; nbreA    =	18
   ;	    =	01000001
- movlw b'01000001'
+ movlw b'11000001'
  movwf A_octet3
  
  ;		10010000
@@ -101,9 +101,9 @@ InitialiserVariablesAEtB
  movlw b'00000000'
  movwf A_octet0
  
- ; nbreB    =	9.5
+ ; nbreB    =	9.r
  ;	    =	01000001
- movlw b'01000001'
+ movlw b'11000001'
  movwf B_octet3
  
  ;		00011000
@@ -159,14 +159,21 @@ ExtraireExposantNombreA
  bsf  A_exposant, 0
  BTFSS A_octet2, 7
  bcf A_exposant, 0
+ 
  movlw b'1111111'
  subwf A_exposant
+ 
  goto ExtraireExposantNombreB
+ 
 
  ;Nom: Hans Darmstadt-Bélanger
- ;But: à partir des octets 0 à 2 du nombre A, extraire la fraction du nombre
+ ;But: à partir de l'octet  2 du nombre A, extraire la fraction du nombre
  ExtraireFractionNombreA
+ movFF A_octet2, A_fraction
+ bsf A_fraction, 7
  
+ goto ExtraireFractionNombreB
+  
 ;Nom: Hans Darmstadt-Bélanger
 ;But: à partir de l'octet B_octet3, déterminer si le nombre est positif ou négatif
 ExtraireSigneNombreB
@@ -182,21 +189,102 @@ ExtraireExposantNombreB
     BTFSC B_octet2, 7
     bsf  B_exposant, 0
   
-    BTFSS A_octet2, 7
-    bcf A_exposant, 0
+    BTFSS B_octet2, 7
+    bcf B_exposant, 0
     
     movlw b'1111111'
-    subwf A_exposant
+
+    subwf B_exposant
+
+    ;instructions de bit negatif
+
     
     goto ExtraireFractionNombreA
  
+;Nom Antoine Larouche
+;But: à partir de l'octet  2 du nombre B, extraire la fraction du nombre
 ExtraireFractionNombreB
- 
+ movFF B_octet2, B_fraction
+ bsf B_fraction, 7
+ goto AdditionnerExposants
+
 AdditionnerExposants
+ movf A_exposant, 0
+ addwf B_exposant, 0
+ addlw d'127'
+ movwf Temporaire_octet3
+ goto MultiplierFractions
  
 MultiplierFractions
+ movf A_fraction, 0
  
+ mulwf B_fraction
+ goto NormaliserLeResultat
+
+ ;Nom: Hans Darmstadt-Bélanger
+ ;But: transférer le resultat de la multiplication dans la répons
 NormaliserLeResultat
+ 
+ ;manipulations ProdL
+ movf PRODL, 0
+ movwf Resultat_octet1
+ rlncf Resultat_octet1
+ 
+ BTFSC Resultat_octet1, 7 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+ bsf Resultat_octet0, 7
+  
+ BTFSS Resultat_octet1, 7 ;s'li est à 1, on skip, il rentre quand il est à 0, faire les manipulations pour 0
+ bcf Resultat_octet0, 7
+ 
+ 
+ ;manipulations ProdH
+ movf PRODH, 0
+ movwf Resultat_octet2
+ rlncf Resultat_octet2
+ nop
+ bcf Resultat_octet2, 7
+  ;prendre le 0 de octet1 et le mettre dans 0 de octet2
+  
+ BTFSC Resultat_octet1,0 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+ bsf Resultat_octet2, 0
+  
+ BTFSS Resultat_octet1, 0 ;s'li est à 1, on skip, il rentre quand il est à 0, faire les manipulations pour 0
+ bcf Resultat_octet2, 0
+ 
+ bcf Resultat_octet1, 0
+ 
+ 
+ 
+ 
+ ;manipulations pour l'exposant
+  movf Temporaire_octet3, 0
+ movwf Resultat_octet3
+ rrncf Resultat_octet3
+ 
+ BTFSC Resultat_octet3, 7 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+ bsf Resultat_octet2, 7
+  
+ BTFSS Resultat_octet3, 7 ;s'il est à 1, on skip, il rentre quand il est à 0, faire les manipulations pour 0
+ bcf Resultat_octet2, 7
+ 
+ 
+ goto DeterminerSigneResultat
+ 
+ 
+ ;Nom: Antoine Larouche
+ ;But: déterminer du signe de la réponse selon le signe des chiffres A et B
+ DeterminerSigneResultat
+ 
+ movf A_signe, 0
+ xorwf B_signe, 0
+ 
+ BTFSC WREG, 0 ;si à 0, skip, donc si rentre il est à 1. faire les manipulations pour 1
+ bsf Resultat_octet3, 7
+  
+ BTFSS WREG, 0 ;s'il est à 1, on skip, il rentre quand il est à 0, faire les manipulations pour 0
+ bcf Resultat_octet3, 7
+ 
+ nop
  
 EcrireResultatFinal
     END
